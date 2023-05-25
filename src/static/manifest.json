@@ -1,19 +1,19 @@
 {
-  "name": "React Extension",
-  "description": "Chrome Extension in React!",
+  "name": "easySales",
+  "description": "easySales is a chrome extension that helps you with sales",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
-    "128": "icon.png"
+    "128": "1.png"
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "React Extension",
+    "default_title": "easySales",
     "default_icon": "icon.png"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage","contextMenus"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"
