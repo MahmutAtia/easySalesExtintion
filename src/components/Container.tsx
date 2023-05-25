@@ -3,23 +3,21 @@ import React from "react";
 import SendIcon from "@mui/icons-material/Send";
 
 export default function Container() {
-  const [companyName, setCompanyName] = React.useState("");
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [phoneNumber, setPhoneNumber] = React.useState("");
-  const [website, setsite] = React.useState("");
+
+
+  const[result, setResult] = React.useState({  companyName: "",
+  emailAddress: "",
+  phoneNumber: "",
+  website: "",})
 
   React.useEffect(() => {
     chrome.storage.sync.get(
         ["companyName", "emailAddress", "phoneNumber", "website"],
-        function (result) {
-            console.log(result);
-            setCompanyName(result.CompanyName);
-            setEmailAddress(result.emailAddress);
-            setPhoneNumber(result.phoneNumber);
-            setsite(result.website);        }
-      );
+        function (data) {
+           setResult({...result , ...data})
+        })
     
-  }, [companyName, emailAddress, phoneNumber, website]);
+  }, [result]);
 
   // clear all data
   const clearData = () => {
@@ -28,14 +26,23 @@ export default function Container() {
       emailAddress: "",
       phoneNumber: "",
       website: "",
+    }, function () {
+        setResult({
+            companyName: "",
+            emailAddress: "",
+            phoneNumber: "",
+            website: "",
+            })
     });
+
+
   };
 
   // set title
   const setTitle = () => {
     navigator.clipboard.readText().then((clipText) => {
       chrome.storage.sync.set({ companyName: clipText }, function () {
-        setCompanyName(clipText);
+       setResult({...result, companyName: clipText})
       });
     });
   };
@@ -44,8 +51,8 @@ export default function Container() {
   const setWebsite = () => {
     navigator.clipboard.readText().then((clipText) => {
       chrome.storage.sync.set({ website: clipText }, function () {
-        setsite(clipText);
-      });
+        setResult({...result, website: clipText})
+    });
     });
   };
 
@@ -53,8 +60,7 @@ export default function Container() {
   const setEmail = () => {
     navigator.clipboard.readText().then((clipText) => {
       chrome.storage.sync.set({ emailAddress: clipText }, function () {
-        setEmailAddress(clipText);
-      });
+setResult({...result, emailAddress: clipText})      });
     });
   };
 
@@ -62,27 +68,29 @@ export default function Container() {
   const setPhone = () => {
     navigator.clipboard.readText().then((clipText) => {
       chrome.storage.sync.set({ phoneNumber: clipText }, function () {
-        setPhoneNumber(clipText);
-      });
+setResult ({...result, phoneNumber: clipText})      });
     });
   };
 
   // Clear a data
   const clearOnePiese = (obj) => {
-    chrome.storage.sync.set(obj);
+    chrome.storage.sync.set(obj, function () {
+        setResult({...result, ...obj})
+    });
   };
 
+  console.log(result);
   return (
     <div className="max-w-sm bg-white shadow-lg rounded-lg overflow-hidden my-4">
       {/* Clear All */}
       <Button onClick={clearData}> Clear All</Button>
 
       <div className="flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-500 cursor-pointer">
-        <SendIcon />
+        <SendIcon color="action" />
         <h1 className="mx-3 text-white font-semibold text-lg">Send</h1>
       </div>
       <div className="py-4 px-6">
-        {companyName === "" ? (
+        {result.companyName === "" ? (
           <div className="flex flex-row space-x-2">
             <TextField
               id="outlined-required"
@@ -94,7 +102,7 @@ export default function Container() {
         ) : (
           <div className="flex flex-row space-x-2">
             <h1 className="text-2xl font-semibold text-gray-800">
-              {companyName}
+              {result.companyName}
             </h1>
             <Button onClick={() => clearOnePiese({ companyName: "" })}>
               clear
@@ -108,7 +116,7 @@ export default function Container() {
               <path d="M322.602 384H480c-10.638-42-39.537-81.691-86.703-96.072-17.781 10.104-38.343 15.873-60.256 15.873-14.823 0-29.024-2.654-42.168-7.49-7.445 12.47-16.927 25.592-27.974 34.906C289.245 341.354 309.146 364 322.602 384zM306.545 200h100.493c-11.554 28-40.327 50.293-73.997 50.293-8.875 0-17.404-1.692-25.375-4.51a128.411 128.411 0 0 1-6.52 25.118c10.066 3.174 20.779 4.862 31.895 4.862 58.479 0 105.886-47.41 105.886-105.872 0-58.465-47.407-105.866-105.886-105.866-37.49 0-70.427 19.703-89.243 49.09C275.607 131.383 298.961 163 306.545 200z" />
             </g>
           </svg>
-          {website === "" ? (
+          {result.website === "" ? (
             <div className="flex flex-row space-x-2">
               <TextField
                 id="outlined-required"
@@ -119,7 +127,7 @@ export default function Container() {
             </div>
           ) : (
             <div className="flex flex-row space-x-2">
-              <h1 className="px-2 text-sm">{website}</h1>{" "}
+              <h1 className="px-2 text-sm">{result.website}</h1>{" "}
               <Button onClick={() => clearOnePiese({ website: "" })}>
                 clear
               </Button>
@@ -135,18 +143,18 @@ export default function Container() {
           </svg>
 
           {/* Phone Number */}
-          {phoneNumber === "" ? (
-            <div className="flex flex-row space-x-2">
+          {result.phoneNumber === "" ? (
+            <div className="flex flex-row space-x-6">
               <TextField
                 id="outlined-required"
                 label="Phone Number"
-                defaultValue="Phone Number"
+                defaultValue=""
               />
               <Button onClick={setPhone}>paste</Button>
             </div>
           ) : (
-            <div className="flex flex-row space-x-2">
-              <h1 className="px-2 text-sm">{phoneNumber}</h1>{" "}
+            <div className="flex flex-row justify-evenly items-center space-x-6">
+              <h1 className="px-2 text-sm">Phone Number :  {result.phoneNumber}</h1>{" "}
               <Button onClick={() => clearOnePiese({ phoneNumber: "" })}>
                 clear
               </Button>
@@ -159,23 +167,23 @@ export default function Container() {
           </svg>
           <h1 className="px-2 text-sm">California</h1>
         </div>
-        <div className="flex items-center mt-4 text-gray-700">
+        <div className="flex items-center mt-4 justify-evenly text-gray-700">
           <svg className="h-6 w-6 fill-current" viewBox="0 0 512 512">
             <path d="M437.332 80H74.668C51.199 80 32 99.198 32 122.667v266.666C32 412.802 51.199 432 74.668 432h362.664C460.801 432 480 412.802 480 389.333V122.667C480 99.198 460.801 80 437.332 80zM432 170.667L256 288 80 170.667V128l176 117.333L432 128v42.667z" />
           </svg>
           {/* Email */}
-          {emailAddress === "" ? (
-            <div className="flex flex-row">
+          {result.emailAddress === "" ? (
+            <div className="flex flex-row justify-evenly items-center  space-x-10">
               <TextField
                 id="outlined-required"
-                label="Website"
+                label="Email Address"
                 defaultValue=""
               />
               <Button onClick={setEmail}>paste</Button>
             </div>
           ) : (
             <div className="flex flex-row">
-              <h1 className="px-2 text-sm">{emailAddress}</h1>{" "}
+              <h1 className="px-2 text-sm">Email Address : {result.emailAddress}</h1>{" "}
               <Button onClick={() => clearOnePiese({ emailAddress: "" })}>
                 clear
               </Button>
