@@ -2,13 +2,41 @@
 import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./contentScript.css";
-import { Typography, Box, Grid, Button } from "@mui/material";
-import MyCard from "../components/Card";
-import Container from "../components/Container";
+import DraggableElement from "../components/Dragable";
 
 
 const App: React.FC<{}> = () => {
-  const [active, setActive] = React.useState(true);
+
+  const [result, setResult] = React.useState({
+    companyName: "",
+    emailAddress: "",
+    phoneNumber: "",
+    website: "",
+    country: "",
+    visable: false,
+  });
+
+  const loadDataFromStorage = () => {
+    chrome.storage.sync.get(
+      ["companyName", "emailAddress", "phoneNumber", "website", "visable", "country"],
+      function (data) {
+        setResult((prev) => ({ ...prev, ...data }));
+      }
+    );
+  };
+
+    // Listen for changes in storage data
+    chrome.storage.onChanged.addListener(function (changes) {
+        for (let key in changes) {
+          setResult((prev) => ({ ...prev, [key]: changes[key].newValue }));
+        }
+      });
+  
+  React.useEffect(() => {
+    loadDataFromStorage();
+
+
+  }, [result.visable]); // Only run once on component mount
 
  
 
@@ -18,26 +46,22 @@ const App: React.FC<{}> = () => {
     sender,
     sendResponse
   ) {
-    console.log("recive message");
-    console.log(request);
     if (request) {
-      console.log("toggle");
-      setActive(!active);
+      chrome.storage.sync.set({ visable: !result.visable }, function () {
+        setResult((prev) => ({ ...prev, visable: !prev.visable }));
+
+      });
     }
   });
 
 
 
-  if (!active) {
+  if (!result.visable) {
     return null;
   }
 
-
   return (
-    <div className="fixed z-[999]  top-20 right-6">
-        <h1 className="text-xl font-bold">Hello World</h1>
-    <Container />
-    </div>
+        <DraggableElement result={result} setResult={setResult} />
    
   );
 };
@@ -48,19 +72,3 @@ const root = createRoot(container);
 root.render(<App />);
 
 
-
-{/* <div className="z-50 fixed top-40 left-96 flex flex-col justify-evenly items-center space-y-4 bg-white  h-[600px] w-96 ">
-<h1 className="text-xl font-bold">Hello World</h1>
-<Button onClick={()=>setActive(false)} variant="contained" color="success"> close</Button>
-<MyCard title="Company Name" content={result.companyName} />
-<MyCard title="Email Address" content={result.emailAddress} />
-<MyCard title="Phone Number" content={result.phoneNumber} />
-<MyCard title="Website" content={result.website} />
-
-<Button
-  onClick={clearData}
-  className="bg-red-500 text-white rounded-md px-4 py-2"
->
-  Clear Data
-</Button>
-</div> */}

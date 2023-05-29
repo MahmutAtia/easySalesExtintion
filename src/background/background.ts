@@ -4,39 +4,52 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("onInstalled...");
 
 
-  chrome.storage.sync.set({companyName:"", emailAddress:"", phoneNumber:"", website:""});
+  chrome.storage.sync.set({companyName:"", emailAddress:"", phoneNumber:"", website:"", visable: true , country: "For Example:Egypt "});
  
+
   chrome.contextMenus.create({
-    id: "easySales",
+    id: "0",
     title: "easySales",
     contexts: ["selection"],
   });
 
+
   chrome.contextMenus.create({
     id: "1",
-    title: "🏦 Set Company Name",
+    title: "Set Company Name 🏦",
     contexts: ["selection"],
-    parentId: "easySales",
+    parentId: "0",
   });
-  chrome.contextMenus.create({
-    id: "2",
-    title: "📧 Set Email Address",
-    contexts: ["selection"],
-    parentId: "easySales",
-  });
-  chrome.contextMenus.create({
-    id: "3",
-    title: "📞 Set Phone Number",
-    contexts: ["selection"],
-    parentId: "easySales",
-  });
+
+
   chrome.contextMenus.create({
     id: "4",
-    title: "🌍 Set Website",
+    title: "Set Website 🌍",
     contexts: ["selection"],
-    parentId: "easySales",
+    parentId: "0",
   });
+
+
+
+chrome.contextMenus.create({
+  id: "3",
+  title: "Set Phone Number 📞",
+  contexts: ["selection"],
+  parentId: "0",
 });
+
+
+  chrome.contextMenus.create({
+    id: "2",
+    title: "Set Email Address 📧",
+    contexts: ["selection"],
+    parentId: "0",
+  });
+
+
+});
+
+ 
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   console.log(info);
