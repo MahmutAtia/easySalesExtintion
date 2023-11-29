@@ -1,11 +1,28 @@
-import { TextField, Button, Alert , Snackbar } from "@mui/material";
-import React, { MouseEvent } from 'react';
+import { TextField, Button, Alert, Snackbar } from "@mui/material";
+import React, { MouseEvent } from "react";
 import SendIcon from "@mui/icons-material/Send";
-import { SendNewCompany } from "../API/SendNewCompany";
+import { CheckCompany, SendNewCompany } from "../API/SendNewCompany";
+import "./Container.css";
 
 export default function Container({ result, setResult }) {
   const [dataerrors, setDataerrors] = React.useState({});
-    const [success,     setSuccess] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+
+
+
+
+    // check for company name
+    const handleCheckForCompynyName = async (companyName) => {
+      console.log(companyName);
+      CheckCompany(companyName).then((res) => {
+        if (res.status === 200) {
+          setDataerrors({ companyName: "this Company Name is already exist" });
+        } else if (res.status === 204) {
+          setDataerrors({});
+        }
+      });
+    };
+
 
   // clear all data
   const clearData = () => {
@@ -32,11 +49,19 @@ export default function Container({ result, setResult }) {
 
   // set title
   const setTitle = () => {
+   
     navigator.clipboard.readText().then((clipText) => {
+      // check for company name
+
+
+
       chrome.storage.sync.set({ companyName: clipText }, function () {
         setResult({ ...result, companyName: clipText });
       });
     });
+
+
+
   };
 
   // set website
@@ -74,7 +99,6 @@ export default function Container({ result, setResult }) {
     });
   };
 
-
   // send new company to the backend
   const sendNew = () => {
     const data = {
@@ -87,8 +111,8 @@ export default function Container({ result, setResult }) {
     SendNewCompany(data)
       .then((res) => {
         if (res.status === 201) {
-            setSuccess(true);
-            clearData();
+          setSuccess(true);
+          clearData();
         }
       })
       .catch((err) => {
@@ -96,25 +120,40 @@ export default function Container({ result, setResult }) {
       });
   };
 
-  const handleClose = (event: MouseEvent<Element> , reason: string) => {
-    if (reason === 'clickaway') {
+  const handleClose = (event: MouseEvent<Element>, reason: string) => {
+    if (reason === "clickaway") {
       return;
     }
 
     setSuccess(false);
   };
 
+
+
   return (
     <div className="max-w-sm bg-white shadow-lg rounded-lg overflow-hidden my-4">
-        
-        <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose as (event: React.SyntheticEvent<Element, Event>) => void} severity="success" sx={{ width: '100%' }}>
-          {result.companyName} is added  successfully !
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={
+            handleClose as (event: React.SyntheticEvent<Element, Event>) => void
+          }
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {result.companyName} is added successfully !
         </Alert>
       </Snackbar>
 
       {/* Clear All  Hide Buttons*/}
       <div className="flex flex-row justify-end items-center space-x-4">
+
+      <Button
+          className="font-bold"
+          onClick={() =>  handleCheckForCompynyName(result.companyName)}
+        >
+          {" "}
+          Check Company Name{" "}
+        </Button>
         <Button
           className="font-bold"
           onClick={() => clearOnePiese({ visable: false })}
@@ -143,7 +182,6 @@ export default function Container({ result, setResult }) {
         </p>
       ))}
 
-
       {/* Title */}
       <div className="py-4 px-6">
         {result.companyName === "" ? (
@@ -152,6 +190,7 @@ export default function Container({ result, setResult }) {
               id="outlined-required"
               label="Title"
               defaultValue="Title"
+              onChange={(e) => handleCheckForCompynyName(e.target.value)}
             />
             <Button onClick={setTitle}>paste</Button>
           </div>

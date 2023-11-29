@@ -30,8 +30,8 @@ const DraggableElement = ({result, setResult}) => {
 
   return (
     <div
-      className="draggable-element fixed z-[999] w-96 h-96 top-20 right-6 cursor-grab"
-      onMouseDown={handleMouseDown}
+    className="draggable-element fixed z-[999] w-96 h-96 top-20 right-6 cursor-grab"
+    onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >

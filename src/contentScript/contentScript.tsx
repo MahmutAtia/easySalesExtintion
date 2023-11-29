@@ -36,7 +36,9 @@ const App: React.FC<{}> = () => {
     loadDataFromStorage();
 
 
-  }, [result.visable]); // Only run once on component mount
+ 
+ 
+  }, [result.visable ]); // Only run once on component mount
 
  
 
@@ -46,7 +48,8 @@ const App: React.FC<{}> = () => {
     sender,
     sendResponse
   ) {
-    if (request) {
+    console.log(request);
+    if (request === "toggle") {
       chrome.storage.sync.set({ visable: !result.visable }, function () {
         setResult((prev) => ({ ...prev, visable: !prev.visable }));
 

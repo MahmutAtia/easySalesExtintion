@@ -32,7 +32,7 @@ const App: React.FC<{}> = () => {
     const countryEndpoint = url + "api/companies/country";
 
     axios
-      .get(countryEndpoint, { headers: { Authorization: `JWT ${apikey}` } })
+      .get(countryEndpoint)
       .then((res) => {
         setOptions(res.data.results || []);
       })
